@@ -45,7 +45,17 @@ class KintoreFormView(FormView):
     def get_context_data(self,**kwargs):
         context=super().get_context_data(**kwargs)
         meal=Meal.objects.all()
-        context["meal"]=Meal.objects.all()
+        # context["meal"]= Meal.objects.all().order_by("-date")[:5]
+        df = read_frame(meal)
+        print(df.columns)
+        df = df.rename(columns={"id": "pk"})
+        df = df.groupby("date").agg({
+            "pk": "max",
+            "weight": "max",
+            "calorie_intake": "sum",
+            "protein": "sum"
+        }).reset_index()
+        context["meal"] = df.to_dict("records")
         x=[data.date for data in meal]
         y=[data.weight for data in meal]
         y2=[data.calorie_intake for data in meal]

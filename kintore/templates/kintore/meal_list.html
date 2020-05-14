@@ -1,50 +1,76 @@
 {% extends 'kintore/base.html' %}
 {% block content %}
-<div class="container">
-        <div class="in-card">
-          <h2>支出の登録</h2>
-          <form action="{% url 'kintore:form_list'%}" method="post">
-            {{ form.non_field_errors }}
-            {% for r_field in form %}
-            <p>{{ r_field.label }}:{{r_field }}</p>
-            {{ r_field.errors }}
-            {% endfor %}
-            {% csrf_token %}
-            <button type="submit" class="btn btn-secondary">request</button>
-          </form>
-          <p>今日の体重は{{w}}kg</p>
+
+<style>
+  #sishutu {
+    color: red;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+</style>
+
+<div class="container" style="text-align: center;">
+  <div class="row">
+    <div class="col-md-6" id="sishutu">
+      <h2>支出の登録</h2>
+      <form action="{% url 'kintore:form_list'%}" method="post">
+        {{ form.non_field_errors }}
+        {% for r_field in form %}
+        <p>{{ r_field.label }}:{{r_field }}</p>
+        {{ r_field.errors }}
+        <br>
+        {% endfor %}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">request</button>
+      </form>
+    </div>
+    <div class="col-md-6">
+      <div class="row">
+        <h1><p>今日の体重は{{w}}kg</p></h1>
+      </div>
+      <div class="row">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        {% autoescape off %}
+        {{ plot_html }}
+        {% endautoescape %}
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <div class="col-md">
     <!--支出テーブル-->
-      <table  width="%" class="table table-striped table-bordered table-hover">
-        　<!-- 表の列の定義-->
-          <thead>
-            <tr>
-              <th class="text-center">日付</th>
-              <th class="text-center">体重</th>
-              <th class="text-center">摂取カロリー</th>
-              <th class="text-center">タンパク質</th>
-              <th class="text-center">更新.削除</th>
+    <table  width="%" class="table table-striped table-bordered table-hover">
+      　<!-- 表の列の定義-->
+        <thead>
+          <tr>
+            <th class="text-center">日付</th>
+            <th class="text-center">体重</th>
+            <th class="text-center">摂取カロリー</th>
+            <th class="text-center">タンパク質</th>
+            <th class="text-center">更新.削除</th>
+          </tr>
+        </thead>
+      　<!-- ここまでが表の列の定義-->
+      　<!-- 表のデータ部分の表示-->
+        <tbody>
+          {% for m in meal %}
+            <tr class="odd gradeX text-center">
+              <td class="text-center" width="100">{{ m.date}}</td>
+              <td class="text-center" width="100">{{ m.weight }}</td>
+              <td class="text-center" width="140">{{ m.calorie_intake }}</td>
+              <td class="text-center" width="140">{{ m.protein }}</td>
+              <td class="text-center" width="140">
+               <a class="btn btn-primary" href="{% url 'kintore:meal_update' m.pk %}">更新ページ</a>
+               <a class="btn btn-danger" href="{% url 'kintore:meal_delete' m.pk%}">削除ページ</a>
+              </td>
             </tr>
-          </thead>
-        　<!-- ここまでが表の列の定義-->
-        　<!-- 表のデータ部分の表示-->
-          <tbody>
-            {% for m in meal %}
-              <tr class="odd gradeX text-center">
-                <td class="text-center" width="100">{{ m.date}}</td>
-                <td class="text-center" width="100">{{ m.weight }}</td>
-                <td class="text-center" width="140">{{ m.calorie_intake }}</td>
-                <td class="text-center" width="140">{{ m.protein }}</td>
-                <td class="text-center" width="140">
-                 <a class="btn btn-primary" href="{% url 'kintore:meal_update' m.pk %}">更新ページ</a>
-                 <a class="btn btn-danger" href="{% url 'kintore:meal_delete' m.pk%}">削除ページ</a>
-                </td>
-              </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-           <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-           {% autoescape off %}
-           {{ plot_html }}
-           {% endautoescape %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock content %}
