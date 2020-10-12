@@ -13,6 +13,6 @@ urlpatterns=[
     path('',views.KintoreFormView.as_view(),name='form_list'),
     path('update/<int:pk>/',views.MealUpdateView.as_view(),name='meal_update'),
     path('update_done/',views.update_done,name='update_done'),
-    path('delete/<int:pk>',views.MealDeleteView.as_view(),name='meal_delete'),
+    path('delete/<int:pk>/',views.MealDeleteView.as_view(),name='meal_delete'),
     path('delete_done/',views.delete_done,name='delete_done'),
 ]

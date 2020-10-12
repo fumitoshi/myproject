@@ -11,6 +11,7 @@ class Meal(models.Model):
     weight=models.IntegerField(verbose_name="体重",help_text="単位はkg")
     calorie_intake=models.IntegerField(verbose_name="カロリー",help_text="単位はkcal")
     protein=models.IntegerField(verbose_name="タンパク質",help_text="単位はg")
+    bentipress=models.IntegerField(verbose_name="ベンチプレス",help_text="単位はkg")
 
     def __str__(self):
         return self.date

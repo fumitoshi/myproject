@@ -21,21 +21,18 @@ class KintoreFormView(FormView):
 
     def form_valid(self,form):
         form.save()
-        meal=Meal.objects.all().order_by("date")
+        meal=Meal.objects.all()
         x=[data.date for data in meal]
         y=[data.weight for data in meal]
         y2=[data.calorie_intake for data in meal]
-        y3=[data.bentipress for data in meal]
     
 
-        trace0=go.Scatter(x=x,y=y,mode='lines',name='weight')
-        trace1=go.Scatter(x=x,y=y2,mode='lines',name='calorie_intake')
-        trace2=go.Scatter(x=x,y=y3,mode='lines',name='bentipress')
+        trace0=go.Scatter(x=x,y=y,mode='lines')
 
-        layout=go.Layout(xaxis=dict(title='日付',type='date'),
-                        yaxis=dict(title='体重'))
+        layout=go.Layout(xaxis=dict(title='data',type='date'),
+                        yaxis=dict(title='value'))
 
-        fig=dict(data=[trace0,trace1,trace2],layout=layout)
+        fig=dict(data=[trace0],layout=layout)
 
         plot_html=plot(fig,output_type='div',include_plotlyjs=False)
         context={
@@ -43,51 +40,27 @@ class KintoreFormView(FormView):
             "meal":Meal.objects.all(),
             "plot_html":plot_html,
         }
-        df = read_frame(meal)
-        df["link"] = df.id.apply(
-            lambda x: f'<a href="/delete/{x}/">{x}</a>'
-        )
-        df = df.rename(columns={"id": "pk"})
-        context["df"] = df.to_html(
-            classes=["table", "table-bordered", "table-hover"],
-            escape=False
-        )
 
         return render(self.request,self.template_name,context)
     
     def get_context_data(self,**kwargs):
         context=super().get_context_data(**kwargs)
-        meal=Meal.objects.all().order_by("date")
-        # context["meal"]= Meal.objects.all().order_by("-date")[:5]
-        df = read_frame(meal)
-        print(df)
-        df["link"] = df.id.apply(
-            lambda x: f'<a href="/delete/{x}/">{x}</a>'
-        )
-
-        context["df"] = df.to_html(
-            classes=["table", "table-bordered", "table-hover"],
-            escape=False
-        )
-        
-        context["meal"] = df.to_dict("records")
+        meal=Meal.objects.all()#こっちでグラフ書いてるから二回定義してる
+        context["meal"]=Meal.objects.all()
         x=[data.date for data in meal]
         y=[data.weight for data in meal]
         y2=[data.calorie_intake for data in meal]
-        y3=[data.bentipress for data in meal]
     
 
-        trace0=go.Scatter(x=x,y=y,mode='lines',name='weight')
-        trace1=go.Scatter(x=x,y=y2,mode='lines',name='calorie_intake')
-        trace2=go.Scatter(x=x,y=y3,mode='lines',name='bentipress')
-        layout=go.Layout(xaxis=dict(title='日付',type='date'),
-                        yaxis=dict(title='体重'))
+        trace0=go.Scatter(x=x,y=y,mode='lines')
 
-        fig=dict(data=[trace0,trace1,trace2],layout=layout)
+        layout=go.Layout(xaxis=dict(title='data',type='date'),
+                        yaxis=dict(title='value'))
+
+        fig=dict(data=[trace0],layout=layout)
 
         plot_html=plot(fig,output_type='div',include_plotlyjs=False)
         context["plot_html"]=plot_html
-        context["w"]=[data.weight for data in meal][-1]
         return context
 
 
@@ -106,9 +79,3 @@ class MealDeleteView(DeleteView):
 
 def delete_done(request):
     return render(request,'kintore/delete_done.html')
-
-
-
-
-
-
